@@ -1,27 +1,25 @@
--- Auto Farm Level by Cyber ShadowInf3ct
--- Tested on Xeno Executor
--- Chạy trong Sea 1
+-- Auto Farm Level (Võ Tân Binh) by Cyber ShadowInf3ct
+-- Sử dụng click chuột (võ thường) để đánh
+-- Chạy tốt trên Xeno Executor
 
 getgenv().AutoFarm = true
 
 function notify(msg)
     game.StarterGui:SetCore("SendNotification", {
-        Title = "Auto Farm Level",
+        Title = "Auto Farm",
         Text = msg,
         Duration = 4
     })
 end
 
-notify("Bắt đầu Auto Farm...")
+notify("Đang bắt đầu Auto Farm...")
 
 local function getEnemy()
     local lv = game.Players.LocalPlayer.Data.Level.Value
     local enemyList = {
-        -- [minLevel] = {mobName, questName, questPos, mobPos}
         [10] = {"Bandit", "BanditQuest1", Vector3.new(1060, 17, 1547), Vector3.new(1150, 17, 1580)},
         [15] = {"Monkey", "JungleQuest", Vector3.new(-1602, 37, 153), Vector3.new(-1440, 63, 200)},
         [30] = {"Pirate", "BuggyQuest1", Vector3.new(-1144, 5, 3828), Vector3.new(-1160, 5, 3930)},
-        -- bạn có thể thêm nhiều dòng khác theo level ở đây
     }
 
     local selected = nil
@@ -36,9 +34,20 @@ end
 function tweenTo(pos)
     local plr = game.Players.LocalPlayer
     local hrp = plr.Character:WaitForChild("HumanoidRootPart")
-    local tween = game:GetService("TweenService"):Create(hrp, TweenInfo.new((hrp.Position - pos).Magnitude / 200, Enum.EasingStyle.Linear), {CFrame = CFrame.new(pos)})
+    local tween = game:GetService("TweenService"):Create(
+        hrp,
+        TweenInfo.new((hrp.Position - pos).Magnitude / 200, Enum.EasingStyle.Linear),
+        {CFrame = CFrame.new(pos)}
+    )
     tween:Play()
     tween.Completed:Wait()
+end
+
+function clickAttack()
+    local VirtualInput = game:GetService("VirtualInputManager")
+    VirtualInput:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+    wait()
+    VirtualInput:SendMouseButtonEvent(0, 0, 0, false, game, 0)
 end
 
 spawn(function()
@@ -50,7 +59,7 @@ spawn(function()
             local questPos = enemy[3]
             local mobPos = enemy[4]
 
-            -- Lấy quest
+            -- Nhận quest
             pcall(function()
                 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(questPos)
                 wait(1)
@@ -59,22 +68,23 @@ spawn(function()
 
             wait(1)
 
-            -- Tìm và đánh quái
+            -- Tìm mob và đánh
             for _, mob in pairs(game:GetService("Workspace").Enemies:GetChildren()) do
                 if mob.Name == mobName and mob:FindFirstChild("Humanoid") and mob.Humanoid.Health > 0 then
                     repeat
                         pcall(function()
-                            local hrp = game.Players.LocalPlayer.Character.HumanoidRootPart
-                            hrp.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0)
-                            wait(0.2)
-                            game:GetService("VirtualInputManager"):SendKeyEvent(true, "Z", false, game)
-                            game:GetService("VirtualInputManager"):SendKeyEvent(false, "Z", false, game)
+                            local player = game.Players.LocalPlayer
+                            local hrp = player.Character:FindFirstChild("HumanoidRootPart")
+                            if hrp and mob:FindFirstChild("HumanoidRootPart") then
+                                hrp.CFrame = mob.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+                                clickAttack()
+                            end
                         end)
-                        wait(0.5)
-                    until mob.Humanoid.Health <= 0 or not AutoFarm
+                        wait(0.3)
+                    until not mob.Parent or mob.Humanoid.Health <= 0 or not AutoFarm
                 end
             end
         end
-        wait(1)
+        wait(0.5)
     end
 end)
