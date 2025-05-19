@@ -11,16 +11,34 @@ getgenv().SelectedIsland = nil
 
 -- Tọa độ các đảo để bay đến farm
 local islandPositions = {
-    ["Đảo Khởi Đầu"] = Vector3.new(-1000, 50, 1500),    -- Bạn chỉnh tọa độ đúng
-    ["Đảo Khỉ"] = Vector3.new(2000, 50, 1000),           -- Bạn chỉnh tọa độ đúng
-    ["Đảo Cướp Biển"] = Vector3.new(3000, 50, 2500),     -- Bạn chỉnh tọa độ đúng
+    ["Starter Island"] = Vector3.new(-1000, 50, 1500),
+    ["Jungle"] = Vector3.new(-1600, 50, 140),
+    ["Pirate Village"] = Vector3.new(-1200, 50, 3600),
+    ["Desert"] = Vector3.new(1150, 50, -1400),
+    ["Frozen Village"] = Vector3.new(1400, 50, -3600),
+    ["Marine Fortress"] = Vector3.new(-5500, 50, 4200),
+    ["Skylands"] = Vector3.new(1550, 50, 4500),
+    ["Prison"] = Vector3.new(-500, 50, -2500),
+    ["Colosseum"] = Vector3.new(4700, 50, 2900),
+    ["Magma Village"] = Vector3.new(-3750, 50, 3000),
+    ["Underwater City"] = Vector3.new(2000, 50, 1000),
+    ["Fountain City"] = Vector3.new(3000, 50, 2500),
 }
 
 -- Tên mob và quest tương ứng cho từng đảo
 local islandInfo = {
-    ["Đảo Khởi Đầu"] = { MobName = "Bandit", QuestName = "BanditQuest1" },
-    ["Đảo Khỉ"] = { MobName = "Monkey", QuestName = "JungleQuest" },
-    ["Đảo Cướp Biển"] = { MobName = "Pirate", QuestName = "BuggyQuest1" },
+    ["Starter Island"] = { MobName = "Bandit", QuestName = "BanditQuest1" },
+    ["Jungle"] = { MobName = "Monkey", QuestName = "JungleQuest" },
+    ["Pirate Village"] = { MobName = "Pirate", QuestName = "BuggyQuest1" },
+    ["Desert"] = { MobName = "Desert Bandit", QuestName = "DesertQuest" },
+    ["Frozen Village"] = { MobName = "Snow Bandit", QuestName = "SnowQuest" },
+    ["Marine Fortress"] = { MobName = "Marine", QuestName = "MarineQuest" },
+    ["Skylands"] = { MobName = "Sky Bandit", QuestName = "SkyQuest" },
+    ["Prison"] = { MobName = "Prisoner", QuestName = "PrisonerQuest" },
+    ["Colosseum"] = { MobName = "Gladiator", QuestName = "ColosseumQuest" },
+    ["Magma Village"] = { MobName = "Magma Ninja", QuestName = "MagmaQuest" },
+    ["Underwater City"] = { MobName = "Fishman", QuestName = "FishmanQuest" },
+    ["Fountain City"] = { MobName = "Galley Pirate", QuestName = "FountainQuest" },
 }
 
 -- Tạo GUI menu
@@ -28,7 +46,7 @@ local ScreenGui = Instance.new("ScreenGui", game.CoreGui)
 ScreenGui.Name = "DucTuyen"
 
 local Frame = Instance.new("Frame", ScreenGui)
-Frame.Size = UDim2.new(0, 220, 0, 180)
+Frame.Size = UDim2.new(0, 220, 0, 250)
 Frame.Position = UDim2.new(0, 10, 0, 10)
 Frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 Frame.BorderSizePixel = 0
@@ -61,12 +79,14 @@ IslandDropdown.TextColor3 = Color3.new(1,1,1)
 IslandDropdown.Text = "Chọn đảo"
 IslandDropdown.AutoButtonColor = false
 
-local IslandList = Instance.new("Frame", Frame)
+local IslandList = Instance.new("ScrollingFrame", Frame)
 IslandList.Size = UDim2.new(1, -20, 0, 90)
 IslandList.Position = UDim2.new(0, 10, 0, 115)
 IslandList.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 IslandList.Visible = false
 IslandList.ClipsDescendants = true
+IslandList.CanvasSize = UDim2.new(0, 0, 0, 0)
+IslandList.ScrollBarThickness = 6
 
 -- Tạo item cho dropdown
 local function createDropdownItem(name)
@@ -87,9 +107,12 @@ local function createDropdownItem(name)
 end
 
 -- Tạo dropdown items
+local count = 0
 for islandName, _ in pairs(islandPositions) do
     createDropdownItem(islandName)
+    count = count + 1
 end
+IslandList.CanvasSize = UDim2.new(0, 0, 0, count * 30)
 
 -- Toggle hiện/ẩn dropdown
 IslandDropdown.MouseButton1Click:Connect(function()
@@ -99,7 +122,7 @@ end)
 -- Toggle Bật/Tắt AutoFarm
 local ToggleButton = Instance.new("TextButton", Frame)
 ToggleButton.Size = UDim2.new(1, -20, 0, 30)
-ToggleButton.Position = UDim2.new(0, 10, 0, 160)
+ToggleButton.Position = UDim2.new(0, 10, 0, 210)
 ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
 ToggleButton.TextColor3 = Color3.new(1,1,1)
 ToggleButton.Text = "BẬT AUTO FARM"
@@ -158,15 +181,6 @@ spawn(function()
                                 local mhrp = mob:FindFirstChild("HumanoidRootPart")
                                 if hrp and mhrp then
                                     hrp.CFrame = mhrp.CFrame + Vector3.new(0, 10, 0)
-                                    click()
-                                end
-                            end)
-                            wait(0.3)
-                        until not mob.Parent or mob.Humanoid.Health <= 0 or not getgenv().AutoFarm
-                    end
-                end
-            end
-        end
-        wait(0.5)
-    end
-end)
+
+::contentReference[oaicite:0]{index=0}
+ 
